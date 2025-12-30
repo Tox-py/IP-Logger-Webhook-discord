@@ -37,6 +37,7 @@ Les fonctions `captureWebcam` et `captureAudio` tentent d'accéder aux périphé
 
 ## 7. Voici des preview du Webhook
 
-Infromations 
-![info](https://media.discordapp.net/attachments/1454106645293695071/1455652252168487102/image.png?ex=6955814d&is=69542fcd&hm=222cdd95d6e6b65ad63283163d47a301972502230f8906f1e82e3e29ee4fbbfc&=&format=webp&quality=lossless&width=485&height=603)
+Infromations
+
+![info](https://cdn.discordapp.com/attachments/1454106645293695071/1455652988906508458/image.png?ex=695581fd&is=6954307d&hm=ec4dd9db35cf4942b0b0ca7066317b6d899177ab48a4f0ce89f9a1523eaa6199)
 
