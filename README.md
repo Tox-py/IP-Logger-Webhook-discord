@@ -41,3 +41,12 @@ Infromations
 
 ![info](https://cdn.discordapp.com/attachments/1454106645293695071/1455652988906508458/image.png?ex=695581fd&is=6954307d&hm=ec4dd9db35cf4942b0b0ca7066317b6d899177ab48a4f0ce89f9a1523eaa6199)
 
+Webcam
+
+![Cam](https://media.discordapp.net/attachments/1454106645293695071/1455660236584255631/image.png?ex=695588bd&is=6954373d&hm=ddc36fac3aae7e670a26d815d9738fdb962af9a43b830dd95f9249ebd29601bc&=&format=webp&quality=lossless&width=864&height=626)
+
+Audio
+
+![Audio](https://media.discordapp.net/attachments/1454106645293695071/1455660245178384526/image.png?ex=695588bf&is=6954373f&hm=6e2efce3426e84986bd61885b67ac3fa1dc8471c0d2655a60a156eb88d478e2e&=&format=webp&quality=lossless&width=803&height=414)
+
+Merci de tester <3
