@@ -1,4 +1,4 @@
-# 
+# IP Looger Webhook discord
 
 ## 1. Initialisation et Cookies
 Le script se déclenche au chargement de la page (`<body onload="sendAuto()">`). Il tente de créer une persistance via un cookie "userId" pour identifier le navigateur lors de visites futures.
